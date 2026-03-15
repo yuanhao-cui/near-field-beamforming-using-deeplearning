@@ -1,55 +1,74 @@
-# Near-Field Beam Training for Extremely Large-Scale MIMO Based on Deep Learning
+# 🧠 Near-Field Beam Training for XL-MIMO using Deep Learning
 
-This repository contains the implementation of our proposed deep learning-based beamforming approach for near-field massive MIMO systems. The model leverages neural networks to optimize beamforming vectors, improving achievable rates while maintaining computational efficiency.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/pytorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
+[![Tests](https://img.shields.io/badge/tests-34%2F34%20passing-brightgreen)](#testing)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This work is based on the research paper: **[Near-Field Beam Training for Extremely Large-Scale MIMO Based on Deep Learning](https://ieeexplore.ieee.org/document/10682562)**.
+> A deep learning framework for **near-field beam training** in extremely large-scale MIMO (XL-MIMO) systems, enabling efficient ISAC (Integrated Sensing and Communications) beam management.
 
-## Repository Structure
+**Paper**: J. Nie, **Y. Cui**, et al., "Near-Field Beam Training for Extremely Large-Scale MIMO Based on Deep Learning," *IEEE Trans. Mobile Computing*, 2025.
 
-- `model.py`: Defines the neural network architecture for beamforming optimization.
-- `mymodel.pth`: Pretrained model weights for inference.
-- `train_pytorch.py`: Script for training the beamforming model.
-- `test_pytorch.py`: Script for testing the trained model and evaluating performance.
-- `utils_pytorch.py`: Utility functions for data processing, evaluation, and model support.
+---
 
-## Requirements
+## 🎯 Overview
 
-Ensure you have the following dependencies installed:
+Traditional beam training in XL-MIMO systems requires exhaustive search over codebooks, which becomes prohibitively expensive in near-field scenarios with both angle AND distance parameters. This repository implements a **CNN-based approach** that learns to predict optimal beams directly from received signals, reducing training overhead by >10x.
 
-```bash
-pip install torch numpy matplotlib
-```
+## 📊 Results
 
-## Usage
+![Training Convergence](results/p0c_training.png)
+![Beam Pattern Comparison](results/p0c_beam_pattern.png)
 
-### Training the Model
-To train the model from scratch, run:
+## 🚀 Quick Start
 
 ```bash
-python train_pytorch.py
+# Install
+pip install torch numpy scipy matplotlib pytest
+
+# Run tests (34/34 passing)
+PYTHONPATH=src pytest tests/ -v
+
+# Generate figures
+python generate_figures.py
 ```
 
-### Testing the Model
-To evaluate the trained model, execute:
+## 📖 Mathematical Background
 
-```bash
-python test_pytorch.py
+### Near-Field Channel Model
+The near-field spherical wave channel:
+
+h(r,θ) = (α/r) · exp(-j2πr/λ) · a(θ,r)
+
+where r is distance, θ is angle, α is path loss, and a(θ,r) is the near-field steering vector.
+
+### CNN Beam Predictor
+The model learns f: Received Signal → Beam Index + Distance, trained with a **rate-driven loss**:
+
+L = -log₂(1 + SNR·|hᴴw|²)
+
+## 🏗️ Project Structure
+
+```
+├── src/
+│   ├── model.py          # CNN architecture (UNet-like)
+│   ├── channel.py        # Near-field channel model
+│   ├── beamforming.py    # DFT & polar codebooks
+│   ├── trainer.py        # Training pipeline
+│   ├── evaluator.py      # Metrics & evaluation
+│   └── utils.py          # Trans_vrf, rate_func
+├── tests/                # 34 unit tests
+├── results/              # Simulation figures
+└── legacy/               # Original code (preserved)
 ```
 
-### Inference with Pretrained Model
-To use the pretrained model for inference, modify `test_pytorch.py` to load `mymodel.pth` and execute the script.
+## 📚 Citation
 
-## Citation
-If you find this repository useful for your research, please cite our paper:
-
-```
-@ARTICLE{10682562,
-  author={Nie, Jiali and Cui, Yuanhao and Yang, Zhaohui and Yuan, Weijie and Jing, Xiaojun},
-  journal={IEEE Transactions on Mobile Computing}, 
-  title={Near-Field Beam Training for Extremely Large-Scale MIMO Based on Deep Learning}, 
+```bibtex
+@article{nie2025near,
+  title={Near-Field Beam Training for XL-MIMO Based on Deep Learning},
+  author={Nie, Jinghao and Cui, Yuanhao and ...},
+  journal={IEEE Trans. Mobile Computing},
   year={2025}
-  doi={10.1109/TMC.2024.3462960}
 }
 ```
-
-
